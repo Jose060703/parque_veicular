@@ -7,6 +7,6 @@ $db   = "parque_veicular";
 $conn = new mysqli($host, $user, $pass, $db);
 
 if($conn->connect_error){
-    die("Error de conexión: PRUEBA hoñlaa" . $conn->connect_error);
+    die("Error de conexión: somos 2" . $conn->connect_error);
 }
 ?>
