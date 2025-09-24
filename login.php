@@ -40,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?php endif; ?>
     <form method="POST" action="">
       <div class="mb-3">
-        <label class="form-label">Usuario</label>
+        <label class="form-label">Usuario (RPE)</label>
         <input type="text" class="form-control" name="usuario" required>
       </div>
       <div class="mb-3">
