@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login CFE - Nivel Master</title>
+<title>Login</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
 /* Fondo elegante */
@@ -127,7 +127,7 @@ h5 {
     <div class="login-header">
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Comisi%C3%B3n_Federal_de_Electricidad_%28logo%29.svg/512px-Comisi%C3%B3n_Federal_de_Electricidad_%28logo%29.svg.png" alt="CFE Logo">
         <h4>Comisión Federal de Electricidad</h4>
-        <p>Sistema de Acceso Nivel Master</p>
+        <p>Sistema de Acceso</p>
     </div>
     <div class="card-body">
         <h5>Iniciar Sesión</h5>
