@@ -12,12 +12,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->execute();
     $result = $stmt->get_result();
 
-    if ($row = $result->fetch_assoc()) {
-        $_SESSION["usuario"] = $row["usuario"];
-        $_SESSION["rol"] = $row["rol"];
+    //de aqui
+   if ($row = $result->fetch_assoc()) { 
+    $_SESSION["usuario"] = $row["usuario"];
+    $_SESSION["rol"] = $row["rol"];
+
+    if ($row["rol"] === "admin") {
         header("Location: panel.php");
-        exit();
+    } elseif ($row["rol"] === "editor") {
+        header("Location: entrega_vehiculos.php"); //formulario de trabajador
     } else {
+        header("Location: panel.php"); // usuarios normales o cualquier otro rol
+    }
+    exit(); //a aqui
+} else {
         $error = "Usuario o contraseña incorrectos";
     }
 }
@@ -92,7 +100,7 @@ body {
     color: #fff;
 }
 
-/* Botón master */
+/* Botón  */
 .btn-cfe {
     background: linear-gradient(90deg, #00a859, #006847);
     border: none;
@@ -125,7 +133,7 @@ h5 {
 
 <div class="login-card">
     <div class="login-header">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Comisi%C3%B3n_Federal_de_Electricidad_%28logo%29.svg/512px-Comisi%C3%B3n_Federal_de_Electricidad_%28logo%29.svg.png" alt="CFE Logo">
+        <img src="img/logocfe.png" alt="CFE Logo">
         <h4>Comisión Federal de Electricidad</h4>
         <p>Sistema de Acceso</p>
     </div>
