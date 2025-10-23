@@ -15,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $km_final = (int)$_POST["km_final"];
 
     if ($km_final < $km_inicial) {
-        $mensaje = "❌ El kilometraje final no puede ser menor al inicial.";
+        $mensaje = "El kilometraje final no puede ser menor al inicial.";
     } else {
         // Prepara el insert dinámico
         $sql = "INSERT INTO entrega_vehiculos 
@@ -122,7 +122,8 @@ body {
           </div>
           <div class="col-md-6 mb-3">
             <label>Kilometraje Final</label>
-            <input type="number" name="km_final" class="form-control" required>
+            <input type="number" name="km_final" class="form-control" 
+       value="<?= isset($_POST['km_final']) ? htmlspecialchars($_POST['km_final']) : '' ?>" required>
           </div>
         </div>
 
@@ -180,7 +181,7 @@ body {
 <div class="text-center mb-3">
   <div style="position: relative; display: inline-block;">
     <img id="autoImg" src="img/auto.jpg" alt="Vehículo" style="width: 400px; border: 1px solid #ccc;">
-    <canvas id="autoCanvas" width="400" height="200" 
+    <canvas id="autoCanvas" width="400" height="300" 
             style="position:absolute; top:0; left:0; cursor: crosshair;"></canvas>
   </div>
 </div>
@@ -214,7 +215,7 @@ function dibujarPuntos() {
   document.getElementById('danios').value = JSON.stringify(puntos);
 }
 
-// ➕ Agregar punto con clic izquierdo
+// Agregar punto
 canvas.addEventListener('click', function(e) {
   const rect = canvas.getBoundingClientRect();
   const x = e.clientX - rect.left;
@@ -223,9 +224,9 @@ canvas.addEventListener('click', function(e) {
   dibujarPuntos();
 });
 
-// ➖ Quitar punto con clic derecho
+// Quitar punto 
 canvas.addEventListener('contextmenu', function(e) {
-  e.preventDefault(); // evita el menú del navegador
+  e.preventDefault(); // evita el menú del navegador (no editar)
   const rect = canvas.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
@@ -241,14 +242,14 @@ canvas.addEventListener('contextmenu', function(e) {
     }
   });
 
-  // Si se encontró un punto cercano, eliminarlo
+  // eliminar PUNTO
   if (indiceEliminar !== -1) {
     puntos.splice(indiceEliminar, 1);
     dibujarPuntos();
   }
 });
 
-// 🔁 Botón para borrar todo
+// Botón para borrar todos los puntossss
 document.getElementById('resetCanvas').addEventListener('click', function() {
   puntos.length = 0;
   dibujarPuntos();

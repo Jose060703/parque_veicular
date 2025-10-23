@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($row["rol"] === "admin") {
         header("Location: panel.php");
     } elseif ($row["rol"] === "editor") {
-        header("Location: entrega_vehiculos.php"); //formulario de trabajador
+        header("Location: panel_trabajador.php"); //formulario de trabajador
     } else {
         header("Location: panel.php"); // usuarios normales o cualquier otro rol
     }
