@@ -18,20 +18,56 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $mensaje = "El kilometraje final no puede ser menor al inicial.";
     } else {
         // Prepara el insert dinámico
-        $sql = "INSERT INTO entrega_vehiculos 
-        (fecha,hora,no_economico,placas,modelo,color,km_inicial,km_final,
-        parrilla,calaveras,parabrisas,espejos,tablero,aire,cinturones,llantas,interiores,limpieza,
-        refaccion,gato,llave_ruedas,señalamientos,extintor,tarjeta_circ,placas_ok,poliza,verificacion,licencia,anticongelante)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+$sql = "INSERT INTO entrega_vehiculos
+(fecha,hora,no_economico,placas,modelo,color,km_inicial,km_final,
+parrilla,calaveras,parabrisas,espejos,tablero,aire,cinturones,llantas,interiores,limpieza,
+refaccion,gato,llave_ruedas,senalamientos,extintor,tarjeta_circ,placas_ok,poliza,verificacion,licencia,anticongelante,
+danios,creado_en,suspencion)
+VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssssiisssssssssssssssssssss", 
-            $fecha,$hora,$no_economico,$placas,$modelo,$color,$km_inicial,$km_final,
-            $_POST["parrilla"],$_POST["calaveras"],$_POST["parabrisas"],$_POST["espejos"],$_POST["tablero"],$_POST["aire"],
-            $_POST["cinturones"],$_POST["llantas"],$_POST["interiores"],$_POST["limpieza"],
-            $_POST["refaccion"],$_POST["gato"],$_POST["llave_ruedas"],$_POST["señalamientos"],$_POST["extintor"],
-            $_POST["tarjeta_circ"],$_POST["placas_ok"],$_POST["poliza"],$_POST["verificacion"],$_POST["licencia"],$_POST["anticongelante"]
-        );
+
+$stmt = $conn->prepare($sql);
+
+$creado_en = date("Y-m-d H:i:s");
+
+$stmt->bind_param(
+"ssssssiissssssssssssssssssssssss",
+$fecha,
+$hora,
+$no_economico,
+$placas,
+$modelo,
+$color,
+$km_inicial,
+$km_final,
+$_POST["parrilla"],
+$_POST["calaveras"],
+$_POST["parabrisas"],
+$_POST["espejos"],
+$_POST["tablero"],
+$_POST["aire"],
+$_POST["cinturones"],
+$_POST["llantas"],
+$_POST["interiores"],
+$_POST["limpieza"],
+$_POST["refaccion"],
+$_POST["gato"],
+$_POST["llave_ruedas"],
+$_POST["senalamientos"],
+$_POST["extintor"],
+$_POST["tarjeta_circ"],
+$_POST["placas_ok"],
+$_POST["poliza"],
+$_POST["verificacion"],
+$_POST["licencia"],
+$_POST["anticongelante"],
+$_POST["danios"],
+$creado_en,
+$_POST["suspencion"]
+);
+
+
+
 
         if ($stmt->execute()) {
             $mensaje = "Formato guardado correctamente.";
@@ -67,9 +103,17 @@ body {
     font-weight: bold;
     font-size: 1.2rem;
 }
+
+input[type="radio"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
 .table-check th, .table-check td {
     text-align: center;
     vertical-align: middle;
+    padding: 8px !important;
 }
 </style>
 </head>
@@ -84,16 +128,16 @@ body {
         <div class="alert alert-info"><?= $mensaje ?></div>
       <?php endif; ?>
 
-      <form method="POST">
-        <h5 class="mt-3">Datos del Vehículo</h5>
+      <form method="POST" action="panel_trabajador.php?tab=entrega">
+        <h5 class="mt-3" style="text-align: center;">Datos del Vehículo</h5> <br><br>
         <div class="row">
           <div class="col-md-6 mb-3">
             <label>Fecha de entrega</label>
-            <input type="date" name="fecha" class="form-control" required>
+            <input type="date" name="fecha" class="form-control" value="<?= date('Y-m-d') ?>" readonly>
           </div>
           <div class="col-md-6 mb-3">
             <label>Hora de entrega</label>
-            <input type="time" name="hora" class="form-control" required>
+            <input type="time" name="hora" class="form-control" value="<?= date('H:i') ?>" readonly>
           </div>
           <div class="col-md-6 mb-3">
             <label>No. Económico</label>
@@ -127,58 +171,92 @@ body {
           </div>
         </div>
 
-        <h5 class="mt-4">Estado</h5>
-        <table class="table table-bordered table-check">
-          <thead>
-            <tr>
-              <th></th>
-              <th>B</th>
-              <th>R</th>
-              <th>M</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php
-              $items = ["parrilla","calaveras","parabrisas","espejos","tablero","aire","cinturones","llantas","interiores","limpieza"];
-              foreach ($items as $item) {
-                echo "<tr><td>".ucfirst($item)."</td>";
-                foreach(["B","R","M"] as $estado){
-                  echo "<td><input type='radio' name='$item' value='$estado' required></td>";
-                }
-                echo "</tr>";
-              }
-            ?>
-          </tbody>
-        </table>
+        <h5 class="mt-4" style="text-align: center;">Estado del Vehículo</h5> <br>
 
-        <h5 class="mt-4">elementos</h5>
-        <table class="table table-bordered table-check">
-          <thead>
-            <tr>
-              <th>Elemento</th>
-              <th>Sí</th>
-              <th>No</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php
-              $elementos = ["refaccion"=>"Llanta de refacción","gato"=>"Gato","llave_ruedas"=>"Llave de ruedas",
-              "señalamientos"=>"Señalamientos","extintor"=>"Extintor vigente","tarjeta_circ"=>"Tarjeta de circulación",
-              "placas_ok"=>"Placas","poliza"=>"Póliza de seguro","verificacion"=>"Verificación",
-              "licencia"=>"Licencia vigente","anticongelante"=>"Anticongelante"];
-              foreach ($elementos as $campo=>$label) {
-                echo "<tr><td>$label</td>";
-                foreach(["Si","No"] as $opt){
-                  echo "<td><input type='radio' name='$campo' value='$opt' required></td>";
-                }
-                echo "</tr>";
-              }
-            ?>
-          </tbody>
-        </table>
+<div class="row">
+  <!-- COLUMNA IZQUIERDA: B / R / M -->
+  <div class="col-md-6">
+    <table class="table table-bordered table-check">
+      <thead class="table-success text-center">
+        <tr>
+          <th>Elemento</th>
+          <th>B</th>
+          <th>R</th>
+          <th>M</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php
+        $items = [
+          "parrilla"=>"PARRILLA",
+          "calaveras"=>"CALAVERAS TRASERAS",
+          "parabrisas"=>"PARABRISAS",
+          "espejos"=>"ESPEJOS",
+          "tablero"=>"TABLERO",
+          "aire"=>"AIRE ACONDICIONADO",
+          "cinturones"=>"CINTURONES DE SEGURIDAD",
+          "llantas"=>"LLANTAS",
+          "interiores"=>"TAPICERÍA/INTERIORES",
+          "limpieza"=>"ORDEN Y LIMPIEZA",
+          "suspencion"=>"SUSPENSIÓN"
+        ];
 
-        <h5 class="mt-4">Señala partes dañadas en el vehículo</h5>
+        foreach ($items as $campo=>$label) {
+          echo "<tr>";
+          echo "<td>$label</td>";
+          foreach (['B','R','M'] as $opt) {
+            echo "<td><input type='radio' name='$campo' value='$opt' required></td>";
+          }
+          echo "</tr>";
+        }
+        ?>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- COLUMNA DERECHA: SI / NO -->
+  <div class="col-md-6">
+    <table class="table table-bordered table-check">
+      <thead class="table-success text-center">
+        <tr>
+          <th>Elemento</th>
+          <th>Sí</th>
+          <th>No</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php
+        $elementos = [
+          "refaccion"=>"LLANTA DE REFACCIÓN",
+          "gato"=>"GATO",
+          "llave_ruedas"=>"LLAVE DE RUEDAS",
+          "senalamientos"=>"SEÑALAMIENTOS",
+          "extintor"=>"EXTINTOR VIGENTE",
+          "tarjeta_circ"=>"TARJETA DE CIRCULACIÓN",
+          "placas_ok"=>"PLACAS",
+          "poliza"=>"PÓLIZA DE SEGURO",
+          "verificacion"=>"VERIFICACIÓN",
+          "licencia"=>"LICENCIA VIGENTE",
+          "anticongelante"=>"ANTICONGELANTE"
+        ];
+
+        foreach ($elementos as $campo=>$label) {
+          echo "<tr>";
+          echo "<td>$label</td>";
+          echo "<td><input type='radio' name='$campo' value='Si' required></td>";
+          echo "<td><input type='radio' name='$campo' value='No' required></td>";
+          echo "</tr>";
+        }
+        ?>
+      </tbody>
+    </table>
+  </div>
+</div>
+        <h5 class="mt-4" style="text-align: center;">Señala partes dañadas en el vehículo</h5>
 <div class="text-center mb-3">
+
+
+
   <div style="position: relative; display: inline-block;">
     <img id="autoImg" src="img/auto.jpg" alt="Vehículo" style="width: 400px; border: 1px solid #ccc;">
     <canvas id="autoCanvas" width="400" height="300" 

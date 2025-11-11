@@ -6,26 +6,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $usuario = $_POST["usuario"];
     $password = $_POST["password"];
 
-    $sql = "SELECT * FROM usuarios WHERE usuario = ? AND password = MD5(?)";
+    // 🔹 Buscamos usuario junto con su rol
+    $sql = "SELECT u.*, r.descripcion AS rol 
+            FROM usuario_privi u
+            INNER JOIN roles r ON u.id_rol = r.id_role
+            WHERE u.Usuario_Rpe = ? AND u.password = MD5(?)";
+
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ss", $usuario, $password);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    //de aqui
-   if ($row = $result->fetch_assoc()) { 
-    $_SESSION["usuario"] = $row["usuario"];
-    $_SESSION["rol"] = $row["rol"];
+    if ($row = $result->fetch_assoc()) { 
+        // 🔹 Guardamos datos en sesión
+        $_SESSION["id_usuario"] = $row["Usuario_Rpe"];
+        $_SESSION["usuario"] = $row["nombre"];
+        $_SESSION["rol"] = $row["rol"]; // Ej: Administrador, Editor, etc.
 
-    if ($row["rol"] === "admin") {
-        header("Location: panel.php");
-    } elseif ($row["rol"] === "editor") {
-        header("Location: panel_trabajador.php"); //formulario de trabajador
+        // 🔹 Redirigimos según su rol
+        switch (strtolower($row["rol"])) {
+            case "administrador":
+                header("Location: panel.php");
+                break;
+            case "editor":
+            case "trabajador": // por si lo manejas con ese nombre
+                header("Location: panel_trabajador.php");
+                break;
+            case "mecanico":
+                header("Location: panel_mecanico.php");
+                break;
+            case "jefe":
+                header("Location: panel_jefe.php");
+                break;
+            default:
+                header("Location: panel.php");
+                break;
+        }
+        exit();
     } else {
-        header("Location: panel.php"); // usuarios normales o cualquier otro rol
-    }
-    exit(); //a aqui
-} else {
         $error = "Usuario o contraseña incorrectos";
     }
 }
@@ -38,7 +56,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <title>Login</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
-/* Fondo elegante */
 body {
     min-height: 100vh;
     display: flex;
@@ -47,8 +64,6 @@ body {
     background: linear-gradient(135deg, #004d33, #006847);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-
-/* Tarjeta con vidrio y sombras profesionales */
 .login-card {
     width: 380px;
     border-radius: 20px;
@@ -58,8 +73,6 @@ body {
     overflow: hidden;
     color: #ffffff;
 }
-
-/* Header del login */
 .login-header {
     text-align: center;
     padding: 25px 15px 15px 15px;
@@ -78,13 +91,9 @@ body {
     font-size: 0.9rem;
     opacity: 0.8;
 }
-
-/* Card body */
 .card-body {
     padding: 25px 20px;
 }
-
-/* Inputs estilizados */
 .form-control {
     border-radius: 12px;
     border: none;
@@ -99,8 +108,6 @@ body {
     box-shadow: 0 0 8px #00ff80;
     color: #fff;
 }
-
-/* Botón  */
 .btn-cfe {
     background: linear-gradient(90deg, #00a859, #006847);
     border: none;
@@ -112,16 +119,12 @@ body {
     transform: scale(1.05);
     box-shadow: 0 8px 20px rgba(0,255,128,0.6);
 }
-
-/* Alertas */
 .alert {
     font-size: 14px;
     text-align: center;
     border-radius: 10px;
     padding: 8px 10px;
 }
-
-/* Títulos internos */
 h5 {
     text-align: center;
     margin-bottom: 20px;
